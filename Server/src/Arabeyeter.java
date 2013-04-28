@@ -15,28 +15,41 @@ import java.awt.Toolkit;
 import java.awt.event.*; 
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
-public class Arabeyeter extends JFrame
-implements KeyListener, MouseListener{
+public class Arabeyeter extends JDialog
+implements KeyListener, MouseListener, ActionListener{
 	static int count = 0;
 	static int diff = 600;
 	static int mode = 0;
 	long lastStamp = 0;
-	JFrame window = new JFrame();
+	//JFrame window = new JFrame();
+	//MyDialog myDialog = new MyDialog(this); 
+	//myDialog.setAlwaysOnTop(true);
+
 	Robot robot = null;
 	static ArrayList<Integer> lastPositionsX = new ArrayList<Integer>();
 	static ArrayList<Integer> lastPositionsY = new ArrayList<Integer>();
 	
 	public Arabeyeter(){
-		window.setSize(300,100);
-		window.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		window.addMouseListener(this);
-		window.getContentPane().setLayout(null);
-		int height = window.getContentPane().getHeight();
-		int width = window.getContentPane().getWidth();
+		setSize(300,100);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		addMouseListener(this);
+		setAlwaysOnTop(true);
+		setVisible(true); 
+		getContentPane().setLayout(null);
+		int height = getContentPane().getHeight();
+		int width = getContentPane().getWidth();
 		int comp_width = width/3;
 		final JButton leftClick = new JButton("Left Click");
 		final JButton rightClick = new JButton("Right Click");
+		addWindowListener(new WindowAdapter() {  
+			  
+		      @Override  
+		      public void windowClosing(WindowEvent e) {  
+		    	  System.exit(0);
+		      }  
+		    });
 		leftClick.addMouseListener(new MouseAdapter() {
 		    public void mouseEntered(MouseEvent e) {
 		        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -80,9 +93,9 @@ implements KeyListener, MouseListener{
 		leftClick.setBounds(0,0,100,80);
 		rightClick.setBounds(100,0,100,80);
 		keyboard.setBounds(200,0,100,80);
-		window.getContentPane().add(leftClick);
-		window.getContentPane().add(rightClick);
-		window.getContentPane().add(keyboard);
+		getContentPane().add(leftClick);
+		getContentPane().add(rightClick);
+		getContentPane().add(keyboard);
 		try{
 			robot = new Robot();
 		}catch(AWTException e){
@@ -110,8 +123,8 @@ implements KeyListener, MouseListener{
 
 		C = new double[2];
 		boolean f = false;
-		window.setLocation(screenSize.width - (window.getWidth()+10), screenSize.height - (window.getHeight()+10));
-		window.setVisible(true);
+		setLocation(screenSize.width - (getWidth()+10), screenSize.height - (getHeight()+10));
+		setVisible(true);
 		System.out.println("Server, waiting for connection...");
 		try {
 			mylink.Connect();
@@ -133,7 +146,7 @@ implements KeyListener, MouseListener{
 			}
 			int x = (int)C[0];
 			int y = (int)C[1];
-			if(x <= 0 || y <= 0)
+			if((x == 0 && y == 0) || (x <= -50 || y <= -50))
 				continue;
 			lastPositionsX.add(x);
 			lastPositionsY.add(y);
@@ -223,5 +236,19 @@ implements KeyListener, MouseListener{
 	public void mouseReleased(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		
+	}
+	class MyDialog extends JDialog  
+    {  
+        public MyDialog(JFrame frame)  
+        {  
+            super(frame);  
+            setSize(300, 80);  
+//            setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);  
+        }  
+    }
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		requestFocus();
 	}
 }
